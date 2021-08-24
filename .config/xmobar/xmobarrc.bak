@@ -1,0 +1,35 @@
+Config { font = "xft:Ubuntu Mono:pixelsize=18"
+       , additionalFonts = [ "xft:FontAwesome:pixelsize=18" ]
+       , borderColor = "black"
+       , border = TopB
+       , bgColor = "black"
+       , fgColor = "#ffffff"
+       , alpha = 210
+       , position = Top
+       , textOffset = -1
+       , iconOffset = -1
+       , lowerOnStart = True
+       , pickBroadest = False
+       , persistent = False
+       , hideOnStart = False
+       , iconRoot = "."
+       , allDesktops = True
+       , overrideRedirect = True
+       , commands = [ Run Weather "VOCI" [ "-t", "<fn=1></fn>  <tempC>°C"] 36000
+                    , Run Cpu ["-t","<fn=1></fn>  <total>%"] 10
+                    , Run Memory ["-t","<fn=1>\xf538</fn> (<usedratio>%)"] 10
+                    --, Run Swap ["-t","Swap: (<usedratio>%)"] 10
+		    , Run BatteryP ["BAT0"]
+             			["-t", "<fn=1></fn>  (<left>%)"
+             			, "-L", "10", "-H", "80"
+            			, "-l", "red", "-h", "green"
+             			, "--", "-O", "on", "-o", "off", "-i", "on"
+             			] 10
+                    , Run Date "%b %_d %Y %H:%M" "date" 10
+		    , Run StdinReader
+                    ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = " %StdinReader% }\
+                    \{<fc=#ee9a00>%date%</fc> | <fc=#f47a60>%cpu%</fc> | <fc=#e8d21d>%memory%</fc> | <fc=#039fbe>%battery%</fc> |  <fc=#9bc472>%VOCI%</fc> "
+       }
