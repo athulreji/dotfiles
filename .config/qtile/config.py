@@ -54,7 +54,7 @@ keys = [
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
 
     # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
 
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
@@ -68,13 +68,22 @@ keys = [
         dmenu_font="sans-11",
         background="#15181a",
         foreground="#e6e6e6",
-        selected_background="#4287f5",
+        selected_background="#6272a4",
         selected_foreground="#fff",
         #dmenu_height=24,  # Only supported by some dmenu forks
     ))),
 
     # slock
     Key([mod], "x", lazy.spawn("slock")),
+
+    # Brightness Control
+    Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
+    Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
+    
+    # Volume Control
+    Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer -q -D pulse set Master 5%+ unmute")),
+    Key([], "XF86AudioLowerVolume", lazy.spawn("amixer -q -D pulse set Master 5%- unmute")),
+    Key([], "XF86AudioMute", lazy.spawn("amixer -q -D pulse set Master toggle")),
 ]
 
 
@@ -83,10 +92,12 @@ keys = [
 
 ## groups
 groups = [
-    Group("1", label="term", matches=[Match(wm_class=["Alacritty"])]),
-    Group("2", label="www", matches=[Match(wm_class=["Firefox"])],layout="max"),
-    Group("3", label="code", matches=[Match(wm_class=["Code"])]),
-    Group("4", label="media", matches=[Match(wm_class=["vlc"])]),
+    Group("1", label="TERM", matches=[Match(wm_class=["Alacritty"])]),
+    Group("2", label="WWW", matches=[Match(wm_class=["Firefox"])],layout="max"),
+    Group("3", label="CODE", matches=[Match(wm_class=["Code"])]),
+    Group("4", label="MEDIA", matches=[Match(wm_class=["vlc","Spotify"])]),
+    Group("5", label="VBOX", matches=[Match(wm_class=["VirtualBox Manager"])]),
+    Group("6", label="OTHR", matches=[Match(wm_class=[])]),
 ]
 
 for i in groups:
@@ -98,6 +109,9 @@ for i in groups:
         # mod1 + shift + letter of group = switch to & move focused window to group
         Key([mod, "shift"], i.name, lazy.window.togroup(i.name, switch_group=True),
             desc="Switch to & move focused window to group {}".format(i.name)),
+
+        Key([mod], "Tab", lazy.screen.next_group()),
+        Key([mod, "shift"], "Tab", lazy.screen.prev_group()),
         # Or, use below if you prefer not to switch to that group.
         # # mod1 + shift + letter of group = move focused window to group
         # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
@@ -110,11 +124,11 @@ for i in groups:
 ## layouts
 layouts = [
     layout.Columns(
-        border_focus = '#366ed6',
+        border_focus = '#bd93f9',
         border_normal = '#0a1529',
-        border_width=3,
-        margin=15,
-        margin_on_single=0,
+        border_width=2,
+        margin=10,
+        #margin_on_single=15,
     ),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
@@ -139,31 +153,39 @@ extension_defaults = widget_defaults.copy()
 
 screens = [
     Screen(
-        bottom=bar.Bar(
+        top=bar.Bar(
             [
-                widget.Image(filename="/home/athul/png/python.png"),
-                widget.GroupBox(),
+                #widget.Image(filename="/home/athul/png/python.png"),
+                widget.GroupBox(
+                    highlight_method='line',
+                    borderwidth=3, fontsize=13, other_current_screen_border="#ff79c6", this_current_screen_border="#ff79c6",
+                    block_highlight_text_color="#ff79c6", active="#bd93f9", inactive="#6272a4",
+                ),
                 widget.TextBox("|",foreground="#999999"),
                 widget.CurrentLayoutIcon(scale=0.6),
                 widget.Prompt(),
-                widget.WindowName(foreground="#4287f5"),
-                widget.Chord(
-                    chords_colors={
-                        'launch': ("#ff0000", "#ffffff"),
-                    },
-                    name_transform=lambda name: name.upper(),
-                ),
+                widget.WindowName(foreground="#ff79c6"),
                 widget.Systray(),
-                widget.BatteryIcon(),
-                widget.Battery(format='{percent:2.0%}'),
-                widget.Clock(format='%d-%m-%Y %I:%M %p'),
-                #widget.QuickExit(),
+                widget.Net(format='{down} ↓↑ {up}', fontsize=14, foreground='#8be9fd'),
+                widget.TextBox("|"),
+                widget.CPU(format=' {load_percent}%', fontsize=14, foreground='#50fa7b'),
+                widget.TextBox("|"),
+                widget.Memory(format=' {MemPercent}%', fontsize=14, foreground='#ffb86c'),
+                widget.TextBox("|"),
+                widget.Battery(format=' {percent:2.0%}', fontsize=14, foreground='#ff79c6'),
+                widget.TextBox("|"),
+                widget.Clock(format=' %I:%M %p ', fontsize=14, foreground='#bd93f9'),
             ],
-            24,
-            background='#000000ba',
+            30,
+            background='#161616',
+            margin=[0, 0, 6, 0],
         ),
-        wallpaper="/home/athul/Pictures/wallpaper/bg4.jpg",
+        bottom=bar.Gap(6),
+        left=bar.Gap(6),
+        right=bar.Gap(6),
+        wallpaper="/home/athul/Pictures/wallpaper/pop.png",
         wallpaper_mode="fill"
+    
     ),
 ]
 
@@ -198,7 +220,7 @@ floating_layout = layout.Floating(float_rules=[
     Match(wm_class='ssh-askpass'),  # ssh-askpass
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
-])
+],border_focus='#bd93f9', border_normal = '#0a1529')
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
