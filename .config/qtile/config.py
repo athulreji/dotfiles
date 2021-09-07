@@ -73,6 +73,9 @@ keys = [
         #dmenu_height=24,  # Only supported by some dmenu forks
     ))),
 
+    # firefox
+    Key([mod],"b", lazy.spawn("firefox")),
+
     # slock
     Key([mod], "x", lazy.spawn("slock")),
 
@@ -93,7 +96,7 @@ keys = [
 ## groups
 groups = [
     Group("1", label="TERM", matches=[Match(wm_class=["Alacritty"])]),
-    Group("2", label="WWW", matches=[Match(wm_class=["Firefox"])],layout="max"),
+    Group("2", label="WEB", matches=[Match(wm_class=["Firefox"])],layout="max"),
     Group("3", label="CODE", matches=[Match(wm_class=["Code"])]),
     Group("4", label="MEDIA", matches=[Match(wm_class=["vlc","Spotify"])]),
     Group("5", label="VBOX", matches=[Match(wm_class=["VirtualBox Manager"])]),
@@ -127,8 +130,8 @@ layouts = [
         border_focus = '#bd93f9',
         border_normal = '#0a1529',
         border_width=2,
-        margin=10,
-        #margin_on_single=15,
+        margin=5,
+        border_on_single = True,
     ),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
@@ -155,18 +158,18 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                #widget.Image(filename="/home/athul/png/python.png"),
+                widget.Image(filename="/home/athul/Pictures/png/python.png", margin=3),
                 widget.GroupBox(
                     highlight_method='line',
                     borderwidth=3, fontsize=13, other_current_screen_border="#ff79c6", this_current_screen_border="#ff79c6",
                     block_highlight_text_color="#ff79c6", active="#bd93f9", inactive="#6272a4",
                 ),
                 widget.TextBox("|",foreground="#999999"),
-                widget.CurrentLayoutIcon(scale=0.6),
+                widget.CurrentLayoutIcon(scale=0.5),
                 widget.Prompt(),
                 widget.WindowName(foreground="#ff79c6"),
                 widget.Systray(),
-                widget.Net(format='{down} ↓↑ {up}', fontsize=14, foreground='#8be9fd'),
+                widget.Net(format='{down}  {up}', fontsize=14, foreground='#8be9fd'),
                 widget.TextBox("|"),
                 widget.CPU(format=' {load_percent}%', fontsize=14, foreground='#50fa7b'),
                 widget.TextBox("|"),
