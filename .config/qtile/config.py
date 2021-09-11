@@ -1,7 +1,6 @@
 # imports
 import os, subprocess
-from typing import List  # noqa: F401
-
+from typing import List
 from libqtile import bar, layout, widget, extension, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
@@ -79,6 +78,9 @@ keys = [
     # slock
     Key([mod], "x", lazy.spawn("slock")),
 
+    # File Manager
+    Key([mod], "f", lazy.spawn("thunar")),
+
     # Brightness Control
     Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
     Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
@@ -87,6 +89,9 @@ keys = [
     Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer -q -D pulse set Master 5%+ unmute")),
     Key([], "XF86AudioLowerVolume", lazy.spawn("amixer -q -D pulse set Master 5%- unmute")),
     Key([], "XF86AudioMute", lazy.spawn("amixer -q -D pulse set Master toggle")),
+    
+    # Mic Control
+    Key([], "XF86AudioMicMute", lazy.spawn("amixer -q -D pulse set Capture toggle")),
 ]
 
 
@@ -158,10 +163,10 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.Image(filename="/home/athul/Pictures/png/python.png", margin=3),
+                #widget.Image(filename="/home/athul/Pictures/png/python.png", margin=3),
                 widget.GroupBox(
-                    highlight_method='line',
-                    borderwidth=3, fontsize=13, other_current_screen_border="#ff79c6", this_current_screen_border="#ff79c6",
+                    highlight_method='line', borderwidth=3, fontsize=13,
+					other_current_screen_border="#ff79c6", this_current_screen_border="#ff79c6",
                     block_highlight_text_color="#ff79c6", active="#bd93f9", inactive="#6272a4",
                 ),
                 widget.TextBox("|",foreground="#999999"),
@@ -171,13 +176,17 @@ screens = [
                 widget.Systray(),
                 widget.Net(format='{down}  {up}', fontsize=14, foreground='#8be9fd'),
                 widget.TextBox("|"),
-                widget.CPU(format=' {load_percent}%', fontsize=14, foreground='#50fa7b'),
+				widget.TextBox("", font="FontAwesome", fontsize=16, foreground='#50fa7b'),# volume icon
+                widget.Volume(fontsize=14, foreground='#50fa7b'),
+				widget.TextBox("|",foreground="#999999"),
+                widget.CPU(format=' {load_percent}%', fontsize=14, foreground='#ffb86c'),
                 widget.TextBox("|"),
-                widget.Memory(format=' {MemPercent}%', fontsize=14, foreground='#ffb86c'),
+                widget.Memory(format=' {MemPercent}%', fontsize=14, foreground='#ff79c6'),
                 widget.TextBox("|"),
-                widget.Battery(format=' {percent:2.0%}', fontsize=14, foreground='#ff79c6'),
+                widget.Battery(format=' {percent:2.0%}', fontsize=14, foreground='#bd93f9'),
                 widget.TextBox("|"),
-                widget.Clock(format=' %I:%M %p ', fontsize=14, foreground='#bd93f9'),
+                widget.TextBox("", font="FontAwesome", fontsize=16, foreground='#ff5555'),# clock icon
+                widget.Clock(format='%I:%M %p ', fontsize=14, foreground='#ff5555'),
             ],
             30,
             background='#161616',
@@ -186,9 +195,16 @@ screens = [
         bottom=bar.Gap(6),
         left=bar.Gap(6),
         right=bar.Gap(6),
-        wallpaper="/home/athul/Pictures/wallpaper/pop.png",
+        wallpaper="/home/athul/Pictures/wallpapers/arch.png",
         wallpaper_mode="fill"
     
+    ),
+    Screen(
+        bottom=bar.Gap(6),
+        left=bar.Gap(6),
+        right=bar.Gap(6),
+        wallpaper="/home/athul/Pictures/wallpapers/arch.png",
+        wallpaper_mode="fill"
     ),
 ]
 
@@ -197,7 +213,6 @@ screens = [
 def start_once():
     home = os.path.expanduser('~')
     subprocess.call([home + '/.config/qtile/autostart.sh'])
-
 
 
 # Drag floating layouts.
@@ -218,6 +233,9 @@ floating_layout = layout.Floating(float_rules=[
     # Run the utility of `xprop` to see the wm class and name of an X client.
     *layout.Floating.default_float_rules,
     Match(wm_class='confirmreset'),  # gitk
+    Match(wm_class='Thunar'), # thunar
+    Match(wm_class='Pamac-manager'), # pamac-manager
+    Match(wm_class='Blueberry.py'), # blueberry
     Match(wm_class='makebranch'),  # gitk
     Match(wm_class='maketag'),  # gitk
     Match(wm_class='ssh-askpass'),  # ssh-askpass
@@ -232,12 +250,4 @@ reconfigure_screens = True
 # focus, should we respect this or not?
 auto_minimize = True
 
-# XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
-# string besides java UI toolkits; you can see several discussions on the
-# mailing lists, GitHub issues, and other WM documentation that suggest setting
-# this string if your java app doesn't work correctly. We may as well just lie
-# and say that we're a working one by default.
-#
-# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
-# java that happens to be on java's whitelist.
 wmname = "LG3D"
