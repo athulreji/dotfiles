@@ -75,15 +75,15 @@ keys = [
     # firefox
     Key([mod],"b", lazy.spawn("firefox")),
 
-    # slock
-    Key([mod], "x", lazy.spawn("slock")),
+    # betterlockscreen
+    Key([mod], "x", lazy.spawn("betterlockscreen -l")),
 
     # File Manager
     Key([mod], "f", lazy.spawn("thunar")),
 
     # Brightness Control
-    Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +10%")),
-    Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 10%-")),
+    Key([], "XF86MonBrightnessUp", lazy.spawn("brightnessctl set +5%")),
+    Key([], "XF86MonBrightnessDown", lazy.spawn("brightnessctl set 5%-")),
     
     # Volume Control
     Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer -q -D pulse set Master 5%+ unmute")),
@@ -100,12 +100,12 @@ keys = [
 
 ## groups
 groups = [
-    Group("1", label="TERM", matches=[Match(wm_class=["Alacritty"])]),
-    Group("2", label="WEB", matches=[Match(wm_class=["Firefox"])],layout="max"),
-    Group("3", label="CODE", matches=[Match(wm_class=["Code"])]),
-    Group("4", label="MEDIA", matches=[Match(wm_class=["vlc","Spotify"])]),
-    Group("5", label="VBOX", matches=[Match(wm_class=["VirtualBox Manager"])]),
-    Group("6", label="OTHR", matches=[Match(wm_class=[])]),
+    Group("1", label="", matches=[Match(wm_class=["Alacritty"])]),
+    Group("2", label="", matches=[Match(wm_class=["firefox"])],layout="max"),
+    Group("3", label="", matches=[Match(wm_class=["Code"])]),
+    Group("4", label="", matches=[Match(wm_class=["vlc","Spotify"])]),
+    Group("5", label="", matches=[Match(wm_class=["VirtualBox Manager"])]),
+    #Group("6", label="othr", matches=[Match(wm_class=[])]),
 ]
 
 for i in groups:
@@ -135,7 +135,7 @@ layouts = [
         border_focus = '#bd93f9',
         border_normal = '#0a1529',
         border_width=2,
-        margin=5,
+        margin=4,
         border_on_single = True,
     ),
     layout.Max(),
@@ -153,8 +153,8 @@ layouts = [
 ]
 
 widget_defaults = dict(
-    font='sans',
-    fontsize=13,
+    font='DejaVu Sans',
+    fontsize=16,
     padding=3,
 )
 extension_defaults = widget_defaults.copy()
@@ -163,16 +163,15 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                #widget.Image(filename="/home/athul/Pictures/png/python.png", margin=3),
                 widget.GroupBox(
-                    highlight_method='line', borderwidth=3, fontsize=13,
+                    highlight_method='line', borderwidth=3, highlight_color="#161616", spacing=6,
 					other_current_screen_border="#ff79c6", this_current_screen_border="#ff79c6",
-                    block_highlight_text_color="#ff79c6", active="#bd93f9", inactive="#6272a4",
+                    block_highlight_text_color="#ff79c6", active="#ff79c6", inactive="#6272a4",
                 ),
                 widget.TextBox("|",foreground="#999999"),
                 widget.CurrentLayoutIcon(scale=0.5),
                 widget.Prompt(),
-                widget.WindowName(foreground="#ff79c6"),
+                widget.WindowName(fontsize=13, foreground="#ff79c6"),
                 widget.Systray(),
                 widget.Net(format='{down}  {up}', fontsize=14, foreground='#8be9fd'),
                 widget.TextBox("|"),
@@ -188,14 +187,14 @@ screens = [
                 widget.TextBox("", font="FontAwesome", fontsize=16, foreground='#ff5555'),# clock icon
                 widget.Clock(format='%I:%M %p ', fontsize=14, foreground='#ff5555'),
             ],
-            30,
-            background='#161616',
+            32,
+            background='#282a36',
             margin=[0, 0, 6, 0],
         ),
         bottom=bar.Gap(6),
         left=bar.Gap(6),
         right=bar.Gap(6),
-        wallpaper="/home/athul/Pictures/wallpapers/arch.png",
+        wallpaper="/home/athul/Pictures/Wallpapers/bg1.jpg",
         wallpaper_mode="fill"
     
     ),
@@ -203,7 +202,7 @@ screens = [
         bottom=bar.Gap(6),
         left=bar.Gap(6),
         right=bar.Gap(6),
-        wallpaper="/home/athul/Pictures/wallpapers/arch.png",
+        wallpaper="/home/athul/Pictures/Wallpapers/bg1.jpg",
         wallpaper_mode="fill"
     ),
 ]
@@ -233,6 +232,7 @@ floating_layout = layout.Floating(float_rules=[
     # Run the utility of `xprop` to see the wm class and name of an X client.
     *layout.Floating.default_float_rules,
     Match(wm_class='confirmreset'),  # gitk
+    Match(wm_class='qBittorrent'),  # qbitorrent
     Match(wm_class='Thunar'), # thunar
     Match(wm_class='Pamac-manager'), # pamac-manager
     Match(wm_class='Blueberry.py'), # blueberry
