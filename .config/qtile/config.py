@@ -4,12 +4,11 @@ from typing import List
 from libqtile import bar, layout, widget, extension, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
 from libqtile.lazy import lazy
-from libqtile.utils import guess_terminal
 
 mod = "mod4"
-terminal = guess_terminal()
+terminal = "kitty"
 
-
+colors = ["#282a36", "#44475a", "#f8f8f2", "#6272a4", "#8be9fd", "#50fa7b", "#ffb86c", "#ff79c6", "#bd93f9", "#ff5555", "#f1fa8c"]
 
 
 ## keys  
@@ -62,15 +61,7 @@ keys = [
         desc="Spawn a command using a prompt widget"),
     
     # dmenu
-    Key([mod], "p", lazy.run_extension(extension.DmenuRun(
-        dmenu_prompt=">",
-        dmenu_font="sans-11",
-        background="#15181a",
-        foreground="#e6e6e6",
-        selected_background="#6272a4",
-        selected_foreground="#fff",
-        #dmenu_height=24,  # Only supported by some dmenu forks
-    ))),
+    Key([mod], "p", lazy.spawn("dmenu_run")),
 
     # firefox
     Key([mod],"b", lazy.spawn("firefox")),
@@ -132,11 +123,10 @@ for i in groups:
 ## layouts
 layouts = [
     layout.Columns(
-        border_focus = '#bd93f9',
+        border_focus = colors[7],
         border_normal = '#0a1529',
         border_width=2,
-        margin=4,
-        border_on_single = True,
+        margin=[0,3,5,3],
     ),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
@@ -164,45 +154,58 @@ screens = [
         top=bar.Bar(
             [
                 widget.GroupBox(
-                    highlight_method='line', borderwidth=3, highlight_color="#161616", spacing=6,
-					other_current_screen_border="#ff79c6", this_current_screen_border="#ff79c6",
-                    block_highlight_text_color="#ff79c6", active="#ff79c6", inactive="#6272a4",
+                    highlight_method='line', borderwidth=3, highlight_color=colors[0], spacing=6,
+					other_current_screen_border=colors[7], this_current_screen_border=colors[7],
+                    block_highlight_text_color=colors[7], active=colors[7], inactive=colors[8],
+                    disable_drag=True, fontsize=16,
                 ),
+                widget.Spacer(length=5),
                 widget.TextBox("|",foreground="#999999"),
+                widget.Spacer(length=20),
                 widget.CurrentLayoutIcon(scale=0.5),
                 widget.Prompt(),
-                widget.WindowName(fontsize=13, foreground="#ff79c6"),
-                widget.Systray(),
-                widget.Net(format='{down}  {up}', fontsize=14, foreground='#8be9fd'),
-                widget.TextBox("|"),
-				widget.TextBox("", font="FontAwesome", fontsize=16, foreground='#50fa7b'),# volume icon
-                widget.Volume(fontsize=14, foreground='#50fa7b'),
-				widget.TextBox("|",foreground="#999999"),
-                widget.CPU(format=' {load_percent}%', fontsize=14, foreground='#ffb86c'),
-                widget.TextBox("|"),
-                widget.Memory(format=' {MemPercent}%', fontsize=14, foreground='#ff79c6'),
-                widget.TextBox("|"),
-                widget.Battery(format=' {percent:2.0%}', fontsize=14, foreground='#bd93f9'),
-                widget.TextBox("|"),
-                widget.TextBox("", font="FontAwesome", fontsize=16, foreground='#ff5555'),# clock icon
-                widget.Clock(format='%I:%M %p ', fontsize=14, foreground='#ff5555'),
+                widget.WindowName(fontsize=13, foreground=colors[7]),
+                #widget.Net(format='{down} {up}', foreground=colors[4]),
+                
+		widget.TextBox("[",foreground=colors[5]),
+		widget.TextBox("", foreground=colors[5]),# volume icon
+                widget.Volume(foreground=colors[5]),
+		widget.TextBox("]",foreground=colors[5]),
+		widget.Spacer(length=10),
+                
+		widget.TextBox("[",foreground=colors[6]),
+		widget.CPU(format=' {load_percent}%', foreground=colors[6]),
+		widget.TextBox("]",foreground=colors[6]),
+		widget.Spacer(length=10),
+                
+		widget.TextBox("[",foreground=colors[7]),
+		widget.Memory(format=' {MemPercent}%', foreground=colors[7]),
+		widget.TextBox("]",foreground=colors[7]),
+		widget.Spacer(length=10),
+                
+		widget.TextBox("[",foreground=colors[8]),
+		widget.Battery(format=' {percent:2.0%}', foreground=colors[8]),
+		widget.TextBox("]",foreground=colors[8]),
+		widget.Spacer(length=10),
+                
+		widget.TextBox("[",foreground=colors[9]),
+		widget.TextBox("", foreground=colors[9]),# clock icon
+                widget.Clock(format='%I:%M %p', foreground=colors[9]),
+		widget.TextBox("]",foreground=colors[9]),
+		widget.Spacer(length=10),
+                widget.Notify(background=colors[0]),
+		widget.Systray(),
             ],
-            32,
-            background='#282a36',
-            margin=[0, 0, 6, 0],
+            34,
+            margin=[0, 0, 4, 0],
+            background=colors[0],
         ),
-        bottom=bar.Gap(6),
-        left=bar.Gap(6),
-        right=bar.Gap(6),
-        wallpaper="/home/athul/Pictures/Wallpapers/bg1.jpg",
+        wallpaper="/home/athul/Pictures/Wallpapers/bg2.jpg",
         wallpaper_mode="fill"
     
     ),
     Screen(
-        bottom=bar.Gap(6),
-        left=bar.Gap(6),
-        right=bar.Gap(6),
-        wallpaper="/home/athul/Pictures/Wallpapers/bg1.jpg",
+        wallpaper="/home/athul/Pictures/Wallpapers/bg2.jpg",
         wallpaper_mode="fill"
     ),
 ]
@@ -231,17 +234,17 @@ cursor_warp = False
 floating_layout = layout.Floating(float_rules=[
     # Run the utility of `xprop` to see the wm class and name of an X client.
     *layout.Floating.default_float_rules,
-    Match(wm_class='confirmreset'),  # gitk
-    Match(wm_class='qBittorrent'),  # qbitorrent
-    Match(wm_class='Thunar'), # thunar
-    Match(wm_class='Pamac-manager'), # pamac-manager
-    Match(wm_class='Blueberry.py'), # blueberry
-    Match(wm_class='makebranch'),  # gitk
-    Match(wm_class='maketag'),  # gitk
-    Match(wm_class='ssh-askpass'),  # ssh-askpass
-    Match(title='branchdialog'),  # gitk
-    Match(title='pinentry'),  # GPG key password entry
-],border_focus='#bd93f9', border_normal = '#0a1529')
+    Match(wm_class='confirmreset'),
+    Match(wm_class='qBittorrent'),
+    Match(wm_class='Thunar'),
+    Match(wm_class='Blueberry.py'),
+    Match(wm_class='makebranch'),
+    Match(wm_class='Lxappearance'),
+    Match(wm_class='maketag'),
+    Match(wm_class='ssh-askpass'),
+    Match(title='branchdialog'),
+    Match(title='pinentry'),
+],border_focus=colors[7], border_normal = '#0a1529',border_width=2)
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
